@@ -24,6 +24,7 @@ PROGRAM DiffusionEquationWithLinearSource
   INTEGER(CMISSIntg), PARAMETER :: generatedMeshUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: meshUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: decompositionUserNumber=1
+  INTEGER(CMISSIntg), PARAMETER :: decomposerUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: geometricFieldUserNumber=1
   INTEGER(CMISSIntg), PARAMETER :: equationsSetFieldUserNumber=2
   INTEGER(CMISSIntg), PARAMETER :: dependentFieldUserNumber=3
@@ -46,6 +47,7 @@ PROGRAM DiffusionEquationWithLinearSource
   TYPE(cmfe_ContextType) :: context
   TYPE(cmfe_CoordinateSystemType) :: coordinateSystem
   TYPE(cmfe_DecompositionType) :: decomposition
+  TYPE(cmfe_DecomposerType) :: decomposer
   TYPE(cmfe_EquationsType) :: equations
   TYPE(cmfe_EquationsSetType) :: equationsSet
   TYPE(cmfe_FieldType) :: geometricField,equationsSetField,dependentField,materialsField,sourceField,analyticField
@@ -59,7 +61,7 @@ PROGRAM DiffusionEquationWithLinearSource
   TYPE(cmfe_SolverEquationsType) :: solverEquations
   
   !Generic CMISS variables
-  INTEGER(CMISSIntg) :: equationsSetIndex
+  INTEGER(CMISSIntg) :: decompositionIndex,equationsSetIndex
   INTEGER(CMISSIntg) :: firstNodeNumber,lastNodeNumber
   INTEGER(CMISSIntg) :: err
   
@@ -88,11 +90,14 @@ PROGRAM DiffusionEquationWithLinearSource
   !Set the random seeds so we can test multi process
   CALL cmfe_Context_RandomSeedsSet(context,9999,err)
   
-  !Get the computational nodes information
+  !Get the number of computational nodes and this computational node number
   CALL cmfe_ComputationEnvironment_Initialise(computationEnvironment,err)
   CALL cmfe_Context_ComputationEnvironmentGet(context,computationEnvironment,err)
-  CALL cmfe_ComputationEnvironment_NumberOfWorldNodesGet(computationEnvironment,numberOfComputationalNodes,err)
-  CALL cmfe_ComputationEnvironment_WorldNodeNumberGet(computationEnvironment,computationalNodeNumber,err)
+  
+  CALL cmfe_WorkGroup_Initialise(worldWorkGroup,err)
+  CALL cmfe_ComputationEnvironment_WorldWorkGroupGet(computationEnvironment,worldWorkGroup,err)
+  CALL cmfe_WorkGroup_NumberOfGroupNodesGet(worldWorkGroup,numberOfComputationNodes,err)
+  CALL cmfe_WorkGroup_GroupNodeNumberGet(worldWorkGroup,computationNodeNumber,err)
 
   !Set output on
   CALL cmfe_OutputSetOn("DiffusionWithLinearSource",err)
@@ -190,6 +195,17 @@ PROGRAM DiffusionEquationWithLinearSource
   CALL cmfe_Decomposition_NumberOfDomainsSet(decomposition,numberOfComputationalNodes,err)
   !Finish the decomposition
   CALL cmfe_Decomposition_CreateFinish(decomposition,err)
+  
+  !-----------------------------------------------------------------------------------------------------------
+  ! DECOMPOSER
+  !-----------------------------------------------------------------------------------------------------------
+
+  CALL cmfe_Decomposer_Initialise(decomposer,err)
+  CALL cmfe_Decomposer_CreateStart(decomposerUserNumber,region,worldWorkGroup,decomposer,err)
+  !Add in the decomposition
+  CALL cmfe_Decomposer_DecompositionAdd(decomposer,decomposition,decompositionIndex,err)
+  !Finish the decomposer
+  CALL cmfe_Decomposer_CreateFinish(decomposer,err)
   
   !-----------------------------------------------------------------------------------------------------------
   ! GEOMETRIC FIELD
