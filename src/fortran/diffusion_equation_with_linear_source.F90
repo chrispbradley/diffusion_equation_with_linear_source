@@ -59,6 +59,7 @@ PROGRAM DiffusionEquationWithLinearSource
   TYPE(cmfe_RegionType) :: region,worldRegion
   TYPE(cmfe_SolverType) :: solver, linearSolver
   TYPE(cmfe_SolverEquationsType) :: solverEquations
+  TYPE(cmfe_WorkGroupType) :: worldWorkGroup
   
   !Generic CMISS variables
   INTEGER(CMISSIntg) :: decompositionIndex,equationsSetIndex
@@ -96,8 +97,8 @@ PROGRAM DiffusionEquationWithLinearSource
   
   CALL cmfe_WorkGroup_Initialise(worldWorkGroup,err)
   CALL cmfe_ComputationEnvironment_WorldWorkGroupGet(computationEnvironment,worldWorkGroup,err)
-  CALL cmfe_WorkGroup_NumberOfGroupNodesGet(worldWorkGroup,numberOfComputationNodes,err)
-  CALL cmfe_WorkGroup_GroupNodeNumberGet(worldWorkGroup,computationNodeNumber,err)
+  CALL cmfe_WorkGroup_NumberOfGroupNodesGet(worldWorkGroup,numberOfComputationalNodes,err)
+  CALL cmfe_WorkGroup_GroupNodeNumberGet(worldWorkGroup,computationalNodeNumber,err)
 
   !Set output on
   CALL cmfe_OutputSetOn("DiffusionWithLinearSource",err)
@@ -192,7 +193,6 @@ PROGRAM DiffusionEquationWithLinearSource
   CALL cmfe_Decomposition_CreateStart(decompositionUserNumber,Mesh,decomposition,err)
   !Set the decomposition to be a general decomposition with the specified number of domains
   CALL cmfe_Decomposition_TypeSet(decomposition,CMFE_DECOMPOSITION_CALCULATED_TYPE,err)
-  CALL cmfe_Decomposition_NumberOfDomainsSet(decomposition,numberOfComputationalNodes,err)
   !Finish the decomposition
   CALL cmfe_Decomposition_CreateFinish(decomposition,err)
   
