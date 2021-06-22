@@ -237,7 +237,7 @@ PROGRAM DiffusionEquationWithLinearSource
   CALL cmfe_Field_Initialise(equationsSetField,err)
   !Set the equations set to be a linear source diffusion problem
   CALL cmfe_EquationsSet_CreateStart(equationsSetUserNumber,region,geometricField,[CMFE_EQUATIONS_SET_CLASSICAL_FIELD_CLASS, &
-    & CMFE_EQUATIONS_SET_DIFFUSION_EQUATION_TYPE,CMFE_EQUATIONS_SET_LINEAR_SOURCE_DIFFUSION_SUBTYPE],equationsSetFieldUserNumber, &
+    & CMFE_EQUATIONS_SET_DIFFUSION_EQUATION_TYPE,CMFE_EQUATIONS_SET_GENERALISED_DIFFUSION_SUBTYPE],equationsSetFieldUserNumber, &
     & equationsSetField,equationsSet,err)  
   !Finish creating the equations set
   CALL cmfe_EquationsSet_CreateFinish(equationsSet,err)
@@ -307,7 +307,7 @@ PROGRAM DiffusionEquationWithLinearSource
   !Create the problem
   CALL cmfe_Problem_Initialise(problem,err)
   CALL cmfe_Problem_CreateStart(problemUserNumber,context,[CMFE_PROBLEM_CLASSICAL_FIELD_CLASS, &
-    & CMFE_PROBLEM_DIFFUSION_EQUATION_TYPE,CMFE_PROBLEM_LINEAR_SOURCE_DIFFUSION_SUBTYPE],problem,err)
+    & CMFE_PROBLEM_DIFFUSION_EQUATION_TYPE,CMFE_PROBLEM_LINEAR_DIFFUSION_SUBTYPE],problem,err)
   !Finish the creation of a problem.
   CALL cmfe_Problem_CreateFinish(problem,err)
 
